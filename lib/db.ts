@@ -1,4 +1,9 @@
-import { Pool } from "pg";
+import { Pool, types } from "pg";
+
+// Return DATE columns as plain "YYYY-MM-DD" strings instead of pg's default
+// JS Date objects, which serialize to full UTC timestamps and shift by a day
+// depending on local timezone.
+types.setTypeParser(types.builtins.DATE, (val) => val);
 
 declare global {
   // eslint-disable-next-line no-var
