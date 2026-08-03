@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
 import type { ListSummary } from "@/lib/types";
 import { LIST_ICONS } from "@/lib/types";
 import ListIconGlyph, { IconChip, getIconStyle } from "@/components/ListIcon";
+import ProgressBar from "@/components/ProgressBar";
 
 export default function ListsPage() {
   const [lists, setLists] = useState<ListSummary[] | null>(null);
@@ -69,46 +71,69 @@ export default function ListsPage() {
                 type="button"
                 key={i}
                 onClick={() => setIcon(i)}
-                className={`h-9 w-9 rounded-md flex items-center justify-center border transition ${
-                  isSelected ? `${style.ring} ${style.bg} ${style.text}` : "border-border text-muted hover:text-ink"
-                }`}
+                className="relative h-9 w-9 rounded-md flex items-center justify-center"
               >
-                <ListIconGlyph icon={i} className="h-4 w-4" />
+                {isSelected && (
+                  <motion.span
+                    layoutId="icon-pick-pill"
+                    className={`absolute inset-0 rounded-md border ${style.ring} ${style.bg} ${style.glow}`}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+                <ListIconGlyph
+                  icon={i}
+                  className={`relative h-4 w-4 ${isSelected ? style.text : "text-muted"}`}
+                />
               </button>
             );
           })}
         </div>
-        <button
+        <motion.button
+          whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={creating || !name.trim()}
-          className="bg-accent text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_0_16px_rgba(91,140,255,0.35)]"
         >
           <Plus className="h-4 w-4" /> Crear lista
-        </button>
+        </motion.button>
       </form>
 
       <section className="flex flex-col gap-2">
         {lists === null && <p className="text-sm text-muted">Cargando…</p>}
         {lists?.length === 0 && <p className="text-sm text-muted">Aún no tienes listas — crea una arriba.</p>}
-        {lists?.map((list) => {
-          const style = getIconStyle(list.icon);
-          return (
-            <div key={list.id} className="card-base p-3 flex items-center gap-3">
-              <Link href={`/lists/${list.id}`} className="flex-1 flex items-center gap-3 min-w-0">
-                <IconChip icon={list.icon} />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-ink truncate">{list.name}</p>
-                  <span className={`text-xs w-fit rounded-full px-2 py-0.5 inline-block mt-0.5 ${style.bg} ${style.text}`}>
-                    {list.itemCount - list.checkedCount} de {list.itemCount} pendientes
-                  </span>
-                </div>
-              </Link>
-              <button onClick={() => removeList(list.id)} className="text-muted hover:text-danger shrink-0">
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          );
-        })}
+        <AnimatePresence initial={false}>
+          {lists?.map((list) => {
+            const style = getIconStyle(list.icon);
+            const pct = list.itemCount ? ((list.itemCount - list.checkedCount) / list.itemCount) * 100 : 0;
+            return (
+              <motion.div
+                key={list.id}
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: 40 }}
+                transition={{ duration: 0.2 }}
+                className="card-base p-3 flex items-center gap-3"
+              >
+                <Link href={`/lists/${list.id}`} className="flex-1 flex items-center gap-3 min-w-0">
+                  <IconChip icon={list.icon} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-ink truncate">{list.name}</p>
+                    <div className="mt-1.5 w-24">
+                      <ProgressBar value={pct} color={style.color} />
+                    </div>
+                    <span className={`text-xs w-fit rounded-full px-2 py-0.5 inline-block mt-1 ${style.bg} ${style.text}`}>
+                      {list.itemCount - list.checkedCount} de {list.itemCount} pendientes
+                    </span>
+                  </div>
+                </Link>
+                <button onClick={() => removeList(list.id)} className="text-muted hover:text-danger shrink-0">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </section>
     </main>
   );

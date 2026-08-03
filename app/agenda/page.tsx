@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Trash2, Check } from "lucide-react";
 import type { EventItem } from "@/lib/types";
 import { todayISO, addDaysISO, formatDateLabel, relativeDayLabel } from "@/lib/date";
@@ -86,13 +87,18 @@ export default function AgendaPage() {
             <button
               key={offset}
               onClick={() => setSelected(value)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium border transition ${
-                isActive
-                  ? "bg-violet-500/15 border-violet-500/40 text-violet-400"
-                  : "border-border text-muted hover:text-ink"
-              }`}
+              className="relative shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium"
             >
-              {label}
+              {isActive && (
+                <motion.span
+                  layoutId="day-tab-pill"
+                  className="absolute inset-0 rounded-full bg-violet-500/15 border border-violet-500/40 shadow-[0_0_14px_rgba(139,92,246,0.35)]"
+                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                />
+              )}
+              <span className={`relative ${isActive ? "text-violet-400" : "text-muted hover:text-ink"}`}>
+                {label}
+              </span>
             </button>
           );
         })}
@@ -127,13 +133,14 @@ export default function AgendaPage() {
           rows={2}
           className="bg-bg border border-border rounded-md px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent resize-none"
         />
-        <button
+        <motion.button
+          whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={adding || !title.trim()}
-          className="bg-accent text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_0_16px_rgba(91,140,255,0.35)]"
         >
           <Plus className="h-4 w-4" /> Agregar evento
-        </button>
+        </motion.button>
       </form>
 
       <section className="flex flex-col gap-4">
@@ -148,32 +155,53 @@ export default function AgendaPage() {
               {groupDate === today ? "Hoy" : formatDateLabel(groupDate)}
             </p>
             <div className="card-base divide-y divide-border">
-              {groupEvents.map((ev) => (
-                <div key={ev.id} className="flex items-center gap-3 p-3">
-                  <button
-                    onClick={() => toggleDone(ev)}
-                    className={`h-5 w-5 shrink-0 rounded-full border flex items-center justify-center transition ${
-                      ev.done ? "bg-emerald-500 border-emerald-500" : "border-border"
-                    }`}
+              <AnimatePresence initial={false}>
+                {groupEvents.map((ev) => (
+                  <motion.div
+                    key={ev.id}
+                    layout
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-center gap-3 p-3 overflow-hidden"
                   >
-                    {ev.done && <Check className="h-3 w-3 text-bg" />}
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm truncate ${ev.done ? "line-through text-muted" : "text-ink"}`}>
-                      {ev.title}
-                    </p>
-                    {ev.notes && <p className="text-xs text-muted truncate">{ev.notes}</p>}
-                  </div>
-                  {ev.time && (
-                    <span className="text-xs num rounded-full px-2 py-0.5 bg-sky-500/15 text-sky-400">
-                      {ev.time}
-                    </span>
-                  )}
-                  <button onClick={() => remove(ev)} className="text-muted hover:text-danger">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
+                    <button
+                      onClick={() => toggleDone(ev)}
+                      className={`h-5 w-5 shrink-0 rounded-full border flex items-center justify-center transition ${
+                        ev.done ? "bg-emerald-500 border-emerald-500" : "border-border"
+                      }`}
+                    >
+                      <AnimatePresence>
+                        {ev.done && (
+                          <motion.span
+                            initial={{ scale: 0, rotate: -45 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            exit={{ scale: 0 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                          >
+                            <Check className="h-3 w-3 text-bg" />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm truncate ${ev.done ? "line-through text-muted" : "text-ink"}`}>
+                        {ev.title}
+                      </p>
+                      {ev.notes && <p className="text-xs text-muted truncate">{ev.notes}</p>}
+                    </div>
+                    {ev.time && (
+                      <span className="text-xs num rounded-full px-2 py-0.5 bg-sky-500/15 text-sky-400">
+                        {ev.time}
+                      </span>
+                    )}
+                    <button onClick={() => remove(ev)} className="text-muted hover:text-danger">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           </div>
         ))}

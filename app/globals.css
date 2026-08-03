@@ -8,6 +8,13 @@ html {
 
 body {
   background-color: #0f1216;
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(91, 140, 255, 0.08), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(168, 85, 247, 0.06), transparent 40%),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: auto, auto, 28px 28px, 28px 28px;
+  background-attachment: fixed;
   color: #e7eaee;
 }
 
@@ -16,12 +23,49 @@ body {
   color: #0f1216;
 }
 
+@keyframes scan-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @layer utilities {
   .label-caps {
     @apply uppercase tracking-widest text-xs font-semibold text-muted;
   }
+  .num {
+    @apply font-mono tabular-nums;
+  }
   .card-base {
-    @apply bg-card border border-border rounded-lg;
+    @apply bg-card border border-border rounded-lg transition-colors duration-300;
+  }
+  .card-scan {
+    @apply relative overflow-hidden;
+  }
+  .card-scan::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(91, 140, 255, 0.9), transparent);
+    width: 40%;
+    animation: scan-sweep 3.5s linear infinite;
+  }
+  .progress-track {
+    @apply h-1.5 w-full rounded-full bg-border/60 overflow-hidden;
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;

@@ -2,12 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { CalendarDays, ListChecks, Home } from "lucide-react";
 
 const TABS = [
-  { href: "/", label: "Inicio", icon: Home, active: "bg-sky-500/15 text-sky-400" },
-  { href: "/agenda", label: "Agenda", icon: CalendarDays, active: "bg-violet-500/15 text-violet-400" },
-  { href: "/lists", label: "Listas", icon: ListChecks, active: "bg-emerald-500/15 text-emerald-400" },
+  { href: "/", label: "Inicio", icon: Home, glow: "bg-sky-500/15 shadow-[0_0_14px_rgba(14,165,233,0.35)]", text: "text-sky-400" },
+  {
+    href: "/agenda",
+    label: "Agenda",
+    icon: CalendarDays,
+    glow: "bg-violet-500/15 shadow-[0_0_14px_rgba(139,92,246,0.35)]",
+    text: "text-violet-400",
+  },
+  {
+    href: "/lists",
+    label: "Listas",
+    icon: ListChecks,
+    glow: "bg-emerald-500/15 shadow-[0_0_14px_rgba(16,185,129,0.35)]",
+    text: "text-emerald-400",
+  },
 ];
 
 export default function NavBar() {
@@ -17,18 +30,21 @@ export default function NavBar() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border">
       <div className="mx-auto max-w-lg flex px-2 py-2">
-        {TABS.map(({ href, label, icon: Icon, active }) => {
+        {TABS.map(({ href, label, icon: Icon, glow, text }) => {
           const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
             <Link key={href} href={href} className="flex-1 flex flex-col items-center gap-1 py-1">
-              <div
-                className={`h-8 w-12 rounded-xl flex items-center justify-center transition ${
-                  isActive ? active : "text-muted"
-                }`}
-              >
-                <Icon className="h-5 w-5" />
+              <div className="relative h-8 w-12 flex items-center justify-center">
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-pill"
+                    className={`absolute inset-0 rounded-xl ${glow}`}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <Icon className={`relative h-5 w-5 transition-colors ${isActive ? text : "text-muted"}`} />
               </div>
-              <span className={`text-xs font-medium ${isActive ? active.split(" ")[1] : "text-muted"}`}>
+              <span className={`text-xs font-medium transition-colors ${isActive ? text : "text-muted"}`}>
                 {label}
               </span>
             </Link>

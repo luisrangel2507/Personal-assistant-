@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Plus, Trash2, X, Check } from "lucide-react";
 import type { ListItem } from "@/lib/types";
 import { IconChip, getIconStyle } from "@/components/ListIcon";
+import ProgressBar from "@/components/ProgressBar";
 
 export default function ListDetailPage() {
   const params = useParams<{ id: string }>();
@@ -92,6 +94,8 @@ export default function ListDetailPage() {
 
   const hasChecked = items?.some((i) => i.checked);
   const style = list ? getIconStyle(list.icon) : null;
+  const pct =
+    items && items.length ? ((items.length - items.filter((i) => i.checked).length) / items.length) * 100 : 0;
 
   return (
     <main className="max-w-lg mx-auto px-4 py-6 flex flex-col gap-6">
@@ -100,7 +104,14 @@ export default function ListDetailPage() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         {list && <IconChip icon={list.icon} />}
-        <h1 className="text-xl font-semibold text-ink flex-1 truncate">{list?.name ?? "…"}</h1>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl font-semibold text-ink truncate">{list?.name ?? "…"}</h1>
+          {items && items.length > 0 && (
+            <div className="mt-1 w-full max-w-[10rem]">
+              <ProgressBar value={pct} color={style?.color ?? "blue"} />
+            </div>
+          )}
+        </div>
         <button onClick={deleteList} className="text-muted hover:text-danger">
           <Trash2 className="h-4 w-4" />
         </button>
@@ -121,41 +132,63 @@ export default function ListDetailPage() {
           placeholder="Cant."
           className="w-16 bg-bg border border-border rounded-md px-2 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
         />
-        <button
+        <motion.button
+          whileTap={{ scale: 0.92 }}
           type="submit"
           disabled={adding || !text.trim()}
-          className="bg-accent text-bg rounded-md px-3 disabled:opacity-40"
+          className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-md px-3 disabled:opacity-40 shadow-[0_0_14px_rgba(91,140,255,0.4)]"
         >
           <Plus className="h-4 w-4" />
-        </button>
+        </motion.button>
       </form>
 
       <section className="card-base divide-y divide-border">
         {items === null && <p className="p-4 text-sm text-muted">Cargando…</p>}
         {items?.length === 0 && <p className="p-4 text-sm text-muted">Aún no hay artículos.</p>}
-        {items?.map((item) => (
-          <div key={item.id} className="flex items-center gap-3 p-3">
-            <button
-              onClick={() => toggleChecked(item)}
-              className={`h-5 w-5 shrink-0 rounded-full border flex items-center justify-center transition ${
-                item.checked ? "bg-emerald-500 border-emerald-500" : "border-border"
-              }`}
+        <AnimatePresence initial={false}>
+          {items?.map((item) => (
+            <motion.div
+              key={item.id}
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center gap-3 p-3 overflow-hidden"
             >
-              {item.checked && <Check className="h-3 w-3 text-bg" />}
-            </button>
-            <p className={`flex-1 text-sm ${item.checked ? "line-through text-muted" : "text-ink"}`}>
-              {item.text}
-            </p>
-            {item.quantity && (
-              <span className={`text-xs rounded-full px-2 py-0.5 ${style?.bg ?? ""} ${style?.text ?? "text-muted"}`}>
-                {item.quantity}
-              </span>
-            )}
-            <button onClick={() => removeItem(item)} className="text-muted hover:text-danger">
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ))}
+              <button
+                onClick={() => toggleChecked(item)}
+                className={`h-5 w-5 shrink-0 rounded-full border flex items-center justify-center transition ${
+                  item.checked ? "bg-emerald-500 border-emerald-500" : "border-border"
+                }`}
+              >
+                <AnimatePresence>
+                  {item.checked && (
+                    <motion.span
+                      initial={{ scale: 0, rotate: -45 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    >
+                      <Check className="h-3 w-3 text-bg" />
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </button>
+              <p className={`flex-1 text-sm ${item.checked ? "line-through text-muted" : "text-ink"}`}>
+                {item.text}
+              </p>
+              {item.quantity && (
+                <span className={`text-xs num rounded-full px-2 py-0.5 ${style?.bg ?? ""} ${style?.text ?? "text-muted"}`}>
+                  {item.quantity}
+                </span>
+              )}
+              <button onClick={() => removeItem(item)} className="text-muted hover:text-danger">
+                <X className="h-4 w-4" />
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </section>
 
       {hasChecked && (

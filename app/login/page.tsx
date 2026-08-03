@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 
 export default function LoginPage() {
@@ -42,14 +43,21 @@ function LoginForm() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-bg">
-      <form
+      <motion.form
         onSubmit={handleSubmit}
-        className="card-base w-full max-w-sm p-6 flex flex-col gap-5 animate-fade-in"
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="card-base card-scan w-full max-w-sm p-6 flex flex-col gap-5"
       >
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="h-12 w-12 rounded-full bg-violet-500/15 border border-violet-500/40 flex items-center justify-center">
+          <motion.div
+            animate={{ boxShadow: ["0 0 0px rgba(139,92,246,0)", "0 0 22px rgba(139,92,246,0.45)", "0 0 0px rgba(139,92,246,0)"] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+            className="h-12 w-12 rounded-full bg-violet-500/15 border border-violet-500/40 flex items-center justify-center"
+          >
             <Lock className="h-5 w-5 text-violet-400" />
-          </div>
+          </motion.div>
           <h1 className="text-xl font-semibold tracking-wide text-ink">Mi Asistente</h1>
         </div>
         <div className="flex flex-col gap-2">
@@ -67,14 +75,15 @@ function LoginForm() {
           />
           {error && <p className="text-sm text-danger">Código inválido.</p>}
         </div>
-        <button
+        <motion.button
+          whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={loading}
-          className="bg-accent text-bg font-semibold uppercase tracking-wide text-sm rounded-md py-2.5 hover:brightness-110 transition disabled:opacity-60"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold uppercase tracking-wide text-sm rounded-md py-2.5 hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_18px_rgba(91,140,255,0.35)]"
         >
           Iniciar sesión
-        </button>
-      </form>
+        </motion.button>
+      </motion.form>
     </main>
   );
 }
