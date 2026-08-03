@@ -47,14 +47,14 @@ function LoginForm() {
         className="card-base w-full max-w-sm p-6 flex flex-col gap-5 animate-fade-in"
       >
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="h-12 w-12 rounded-full bg-accent/15 border border-accent/40 flex items-center justify-center">
-            <Lock className="h-5 w-5 text-accent" />
+          <div className="h-12 w-12 rounded-full bg-violet-500/15 border border-violet-500/40 flex items-center justify-center">
+            <Lock className="h-5 w-5 text-violet-400" />
           </div>
-          <h1 className="text-xl font-semibold tracking-wide text-ink">My Assistant</h1>
+          <h1 className="text-xl font-semibold tracking-wide text-ink">Mi Asistente</h1>
         </div>
         <div className="flex flex-col gap-2">
           <label className="label-caps" htmlFor="passcode">
-            Passcode
+            Código de acceso
           </label>
           <input
             id="passcode"
@@ -62,17 +62,17 @@ function LoginForm() {
             autoFocus
             value={passcode}
             onChange={(e) => setPasscode(e.target.value)}
-            placeholder="Enter your passcode"
+            placeholder="Ingresa tu código"
             className="bg-bg border border-border rounded-md px-3 py-2 text-ink placeholder:text-muted focus:outline-none focus:border-accent"
           />
-          {error && <p className="text-sm text-danger">Invalid passcode.</p>}
+          {error && <p className="text-sm text-danger">Código inválido.</p>}
         </div>
         <button
           type="submit"
           disabled={loading}
           className="bg-accent text-bg font-semibold uppercase tracking-wide text-sm rounded-md py-2.5 hover:brightness-110 transition disabled:opacity-60"
         >
-          Log in
+          Iniciar sesión
         </button>
       </form>
     </main>

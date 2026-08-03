@@ -10,13 +10,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "My Assistant",
-  description: "Agenda, shopping lists and trip lists in one place.",
+  title: "Mi Asistente",
+  description: "Tu agenda, lista de compras y lista de viaje en un solo lugar.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="es" className={inter.variable}>
       <body className="min-h-screen font-sans antialiased pb-20">
         {children}
         <NavBar />
