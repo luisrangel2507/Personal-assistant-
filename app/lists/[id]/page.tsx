@@ -136,7 +136,7 @@ export default function ListDetailPage() {
           whileTap={{ scale: 0.92 }}
           type="submit"
           disabled={adding || !text.trim()}
-          className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-md px-3 disabled:opacity-40 shadow-[0_0_14px_rgba(91,140,255,0.4)]"
+          className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-md px-3 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
         >
           <Plus className="h-4 w-4" />
         </motion.button>

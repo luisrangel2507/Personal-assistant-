@@ -85,8 +85,8 @@ export default function HomePage() {
       >
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
-            <div className="h-7 w-7 rounded-lg bg-sky-500/15 flex items-center justify-center">
-              <CalendarDays className="h-4 w-4 text-sky-400" />
+            <div className="h-7 w-7 rounded-lg bg-sky-500/10 flex items-center justify-center">
+              <CalendarDays className="h-4 w-4 text-sky-600" />
             </div>
             Agenda de hoy
           </h2>
@@ -131,7 +131,7 @@ export default function HomePage() {
                   <p className={`text-sm ${ev.done ? "line-through text-muted" : "text-ink"}`}>{ev.title}</p>
                 </div>
                 {ev.time && (
-                  <span className="text-xs num rounded-full px-2 py-0.5 bg-sky-500/15 text-sky-400">
+                  <span className="text-xs num rounded-full px-2 py-0.5 bg-sky-500/10 text-sky-600">
                     {ev.time}
                   </span>
                 )}
@@ -158,7 +158,7 @@ export default function HomePage() {
             whileTap={{ scale: 0.92 }}
             type="submit"
             disabled={adding || !title.trim()}
-            className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-md px-3 disabled:opacity-40 shadow-[0_0_14px_rgba(91,140,255,0.4)]"
+            className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-md px-3 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
           >
             <Plus className="h-4 w-4" />
           </motion.button>

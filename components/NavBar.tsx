@@ -6,20 +6,20 @@ import { motion } from "framer-motion";
 import { CalendarDays, ListChecks, Home } from "lucide-react";
 
 const TABS = [
-  { href: "/", label: "Inicio", icon: Home, glow: "bg-sky-500/15 shadow-[0_0_14px_rgba(14,165,233,0.35)]", text: "text-sky-400" },
+  { href: "/", label: "Inicio", icon: Home, glow: "bg-sky-500/10 shadow-[0_1px_8px_rgba(14,165,233,0.25)]", text: "text-sky-600" },
   {
     href: "/agenda",
     label: "Agenda",
     icon: CalendarDays,
-    glow: "bg-violet-500/15 shadow-[0_0_14px_rgba(139,92,246,0.35)]",
-    text: "text-violet-400",
+    glow: "bg-violet-500/10 shadow-[0_1px_8px_rgba(139,92,246,0.25)]",
+    text: "text-violet-600",
   },
   {
     href: "/lists",
     label: "Listas",
     icon: ListChecks,
-    glow: "bg-emerald-500/15 shadow-[0_0_14px_rgba(16,185,129,0.35)]",
-    text: "text-emerald-400",
+    glow: "bg-emerald-500/10 shadow-[0_1px_8px_rgba(16,185,129,0.25)]",
+    text: "text-emerald-600",
   },
 ];
 

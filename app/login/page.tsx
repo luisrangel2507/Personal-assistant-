@@ -54,9 +54,9 @@ function LoginForm() {
           <motion.div
             animate={{ boxShadow: ["0 0 0px rgba(139,92,246,0)", "0 0 22px rgba(139,92,246,0.45)", "0 0 0px rgba(139,92,246,0)"] }}
             transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-            className="h-12 w-12 rounded-full bg-violet-500/15 border border-violet-500/40 flex items-center justify-center"
+            className="h-12 w-12 rounded-full bg-violet-500/10 border border-violet-500/30 flex items-center justify-center"
           >
-            <Lock className="h-5 w-5 text-violet-400" />
+            <Lock className="h-5 w-5 text-violet-600" />
           </motion.div>
           <h1 className="text-xl font-semibold tracking-wide text-ink">Mi Asistente</h1>
         </div>
@@ -79,7 +79,7 @@ function LoginForm() {
           whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={loading}
-          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold uppercase tracking-wide text-sm rounded-md py-2.5 hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_18px_rgba(91,140,255,0.35)]"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold uppercase tracking-wide text-sm rounded-md py-2.5 hover:brightness-110 transition disabled:opacity-60 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
         >
           Iniciar sesión
         </motion.button>

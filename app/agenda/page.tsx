@@ -92,11 +92,11 @@ export default function AgendaPage() {
               {isActive && (
                 <motion.span
                   layoutId="day-tab-pill"
-                  className="absolute inset-0 rounded-full bg-violet-500/15 border border-violet-500/40 shadow-[0_0_14px_rgba(139,92,246,0.35)]"
+                  className="absolute inset-0 rounded-full bg-violet-500/10 border border-violet-500/30 shadow-[0_1px_8px_rgba(139,92,246,0.25)]"
                   transition={{ type: "spring", stiffness: 400, damping: 32 }}
                 />
               )}
-              <span className={`relative ${isActive ? "text-violet-400" : "text-muted hover:text-ink"}`}>
+              <span className={`relative ${isActive ? "text-violet-600" : "text-muted hover:text-ink"}`}>
                 {label}
               </span>
             </button>
@@ -137,7 +137,7 @@ export default function AgendaPage() {
           whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={adding || !title.trim()}
-          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_0_16px_rgba(91,140,255,0.35)]"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
         >
           <Plus className="h-4 w-4" /> Agregar evento
         </motion.button>
@@ -192,7 +192,7 @@ export default function AgendaPage() {
                       {ev.notes && <p className="text-xs text-muted truncate">{ev.notes}</p>}
                     </div>
                     {ev.time && (
-                      <span className="text-xs num rounded-full px-2 py-0.5 bg-sky-500/15 text-sky-400">
+                      <span className="text-xs num rounded-full px-2 py-0.5 bg-sky-500/10 text-sky-600">
                         {ev.time}
                       </span>
                     )}

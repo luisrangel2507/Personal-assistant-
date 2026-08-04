@@ -92,7 +92,7 @@ export default function ListsPage() {
           whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={creating || !name.trim()}
-          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_0_16px_rgba(91,140,255,0.35)]"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
         >
           <Plus className="h-4 w-4" /> Crear lista
         </motion.button>

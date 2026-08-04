@@ -3,21 +3,21 @@
 @tailwind utilities;
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background-color: #0f1216;
+  background-color: #f1e9da;
   background-image:
-    radial-gradient(circle at 20% 0%, rgba(91, 140, 255, 0.08), transparent 45%),
-    radial-gradient(circle at 90% 10%, rgba(168, 85, 247, 0.06), transparent 40%);
+    radial-gradient(circle at 20% 0%, rgba(61, 111, 224, 0.06), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.05), transparent 40%);
   background-attachment: fixed;
-  color: #e7eaee;
+  color: #2b2620;
 }
 
 ::selection {
-  background-color: #5b8cff;
-  color: #0f1216;
+  background-color: #3d6fe0;
+  color: #fffcf5;
 }
 
 @keyframes scan-sweep {
