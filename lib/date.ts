@@ -21,22 +21,47 @@ export function addDaysISO(iso: string, days: number): string {
   return `${y}-${m}-${d}`;
 }
 
-export function formatDateLabel(iso: string): string {
-  return parseISO(iso).toLocaleDateString(LOCALE, { weekday: "short", month: "short", day: "numeric" });
-}
-
 export function formatFullDateLabel(iso: string): string {
   return parseISO(iso).toLocaleDateString(LOCALE, { weekday: "long", month: "long", day: "numeric" });
 }
 
-/** Short tab label used by the agenda's day picker: "Ayer", "Hoy", "Mañana", or "sáb 01 ago". */
-export function relativeDayLabel(iso: string): string {
-  const today = todayISO();
-  const diff = (parseISO(iso).getTime() - parseISO(today).getTime()) / 86_400_000;
-  if (diff === 0) return "Hoy";
-  if (diff === -1) return "Ayer";
-  if (diff === 1) return "Mañana";
-  return parseISO(iso)
-    .toLocaleDateString(LOCALE, { weekday: "short", day: "2-digit", month: "short" })
-    .replace(",", "");
+/** "3 de agosto" / "2026", split so the year can be styled separately. */
+export function formatHeaderDate(iso: string): { dayMonth: string; year: string } {
+  const date = parseISO(iso);
+  return {
+    dayMonth: date.toLocaleDateString(LOCALE, { day: "numeric", month: "long" }),
+    year: String(date.getFullYear()),
+  };
+}
+
+/** The 7 ISO dates (Sunday-Saturday) of the week containing `iso`. */
+export function getWeekDays(iso: string): string[] {
+  const date = parseISO(iso);
+  const start = new Date(date);
+  start.setDate(date.getDate() - date.getDay());
+  return Array.from({ length: 7 }, (_, i) => {
+    const day = new Date(start);
+    day.setDate(start.getDate() + i);
+    const y = day.getFullYear();
+    const m = String(day.getMonth() + 1).padStart(2, "0");
+    const d = String(day.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  });
+}
+
+export function weekdayShort(iso: string): string {
+  return parseISO(iso).toLocaleDateString(LOCALE, { weekday: "short" });
+}
+
+export function dayNumber(iso: string): number {
+  return parseISO(iso).getDate();
+}
+
+/** "6:30 a.m." from a 24h "HH:MM" string. */
+export function formatTime12h(time: string): string {
+  const [hStr, m] = time.split(":");
+  let h = parseInt(hStr, 10);
+  const period = h < 12 ? "a.m." : "p.m.";
+  h = h % 12 || 12;
+  return `${h}:${m} ${period}`;
 }

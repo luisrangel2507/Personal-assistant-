@@ -2,18 +2,24 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Trash2, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Trash2, Check, Clock, X } from "lucide-react";
 import type { EventItem } from "@/lib/types";
-import { todayISO, addDaysISO, formatDateLabel, relativeDayLabel } from "@/lib/date";
-
-const DAY_TABS = ["all", -1, 0, 1, 2, 3] as const;
+import {
+  todayISO,
+  addDaysISO,
+  getWeekDays,
+  weekdayShort,
+  dayNumber,
+  formatHeaderDate,
+  formatTime12h,
+} from "@/lib/date";
 
 export default function AgendaPage() {
   const today = todayISO();
   const [events, setEvents] = useState<EventItem[] | null>(null);
-  const [selected, setSelected] = useState<string | "all">(today);
+  const [selected, setSelected] = useState(today);
+  const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState(today);
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
   const [adding, setAdding] = useState(false);
@@ -29,17 +35,18 @@ export default function AgendaPage() {
 
   async function addEvent(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !date) return;
+    if (!title.trim()) return;
     setAdding(true);
     try {
       await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, date, time: time || null, notes }),
+        body: JSON.stringify({ title, date: selected, time: time || null, notes }),
       });
       setTitle("");
       setTime("");
       setNotes("");
+      setShowForm(false);
       await load();
     } finally {
       setAdding(false);
@@ -60,152 +67,195 @@ export default function AgendaPage() {
     await fetch(`/api/events/${ev.id}`, { method: "DELETE" });
   }
 
-  const grouped = useMemo(() => {
-    if (!events) return [];
-    const filtered = selected === "all" ? events : events.filter((e) => e.date === selected);
+  const weekDays = useMemo(() => getWeekDays(selected), [selected]);
+
+  const eventsByDate = useMemo(() => {
     const map = new Map<string, EventItem[]>();
-    for (const ev of filtered) {
+    for (const ev of events ?? []) {
       if (!map.has(ev.date)) map.set(ev.date, []);
       map.get(ev.date)!.push(ev);
     }
-    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [events, selected]);
+    return map;
+  }, [events]);
+
+  const dayEvents = useMemo(() => {
+    const list = eventsByDate.get(selected) ?? [];
+    return [...list].sort((a, b) => (a.time ?? "99:99").localeCompare(b.time ?? "99:99"));
+  }, [eventsByDate, selected]);
+
+  const { dayMonth, year } = formatHeaderDate(selected);
 
   return (
-    <main className="max-w-lg mx-auto px-4 py-6 flex flex-col gap-6">
-      <header>
-        <p className="label-caps">Agenda</p>
-        <h1 className="text-2xl font-semibold text-ink">Todos los eventos</h1>
+    <main className="max-w-lg mx-auto px-4 py-6 flex flex-col gap-5">
+      <header className="flex items-center justify-between gap-2">
+        <h1 className="text-2xl font-bold text-ink">
+          {dayMonth} de <span className="text-accent">{year}</span>
+        </h1>
+        <div className="flex gap-1 shrink-0">
+          <button
+            onClick={() => setSelected((d) => addDaysISO(d, -7))}
+            className="h-8 w-8 rounded-full flex items-center justify-center text-muted hover:text-ink hover:bg-card transition"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setSelected((d) => addDaysISO(d, 7))}
+            className="h-8 w-8 rounded-full flex items-center justify-center text-muted hover:text-ink hover:bg-card transition"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
-      <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
-        {DAY_TABS.map((offset) => {
-          const value = offset === "all" ? "all" : addDaysISO(today, offset);
-          const label = offset === "all" ? "Todos" : relativeDayLabel(value);
-          const isActive = selected === value;
+      <div className="grid grid-cols-7">
+        {weekDays.map((d) => {
+          const isSelected = d === selected;
+          const isToday = d === today;
+          const dayList = eventsByDate.get(d) ?? [];
           return (
-            <button
-              key={offset}
-              onClick={() => setSelected(value)}
-              className="relative shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium"
-            >
-              {isActive && (
-                <motion.span
-                  layoutId="day-tab-pill"
-                  className="absolute inset-0 rounded-full bg-violet-500/10 border border-violet-500/30 shadow-[0_1px_8px_rgba(139,92,246,0.25)]"
-                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                />
-              )}
-              <span className={`relative ${isActive ? "text-violet-600" : "text-muted hover:text-ink"}`}>
-                {label}
+            <button key={d} onClick={() => setSelected(d)} className="flex flex-col items-center gap-1.5 py-1">
+              <span className="text-[11px] uppercase text-muted font-medium">{weekdayShort(d)}</span>
+              <span
+                className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold transition ${
+                  isSelected
+                    ? "bg-gradient-to-br from-accent to-violet-500 text-white shadow-[0_2px_10px_rgba(61,111,224,0.35)]"
+                    : isToday
+                      ? "text-accent"
+                      : "text-ink"
+                }`}
+              >
+                {dayNumber(d)}
               </span>
+              <div className="flex gap-0.5 h-1.5">
+                {dayList.slice(0, 3).map((ev) => (
+                  <span
+                    key={ev.id}
+                    className={`h-1.5 w-1.5 rounded-full ${ev.done ? "bg-emerald-500" : "bg-violet-400"}`}
+                  />
+                ))}
+              </div>
             </button>
           );
         })}
       </div>
 
-      <form onSubmit={addEvent} className="card-base p-4 flex flex-col gap-3">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Título del evento"
-          className="bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
-        />
-        <div className="flex gap-2">
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="flex-1 bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink focus:outline-none focus:border-accent"
-          />
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            className="w-28 bg-bg border border-border rounded-xl px-2 py-2 text-sm text-ink focus:outline-none focus:border-accent"
-          />
-        </div>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Notas (opcional)"
-          rows={2}
-          className="bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent resize-none"
-        />
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          type="submit"
-          disabled={adding || !title.trim()}
-          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-xl py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
-        >
-          <Plus className="h-4 w-4" /> Agregar evento
-        </motion.button>
-      </form>
-
-      <section className="flex flex-col gap-4">
+      <section className="flex-1">
         {events === null && <p className="text-sm text-muted">Cargando…</p>}
-        {events?.length === 0 && <p className="text-sm text-muted">Aún no hay eventos.</p>}
-        {grouped.length === 0 && events && events.length > 0 && (
-          <p className="text-sm text-muted">Nada para este día.</p>
-        )}
-        {grouped.map(([groupDate, groupEvents]) => (
-          <div key={groupDate} className="flex flex-col gap-2">
-            <p className="label-caps">
-              {groupDate === today ? "Hoy" : formatDateLabel(groupDate)}
-            </p>
-            <div className="card-base divide-y divide-border">
-              <AnimatePresence initial={false}>
-                {groupEvents.map((ev) => (
-                  <motion.div
-                    key={ev.id}
-                    layout
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex items-center gap-3 p-3 overflow-hidden"
-                  >
-                    <button
-                      onClick={() => toggleDone(ev)}
-                      className={`h-5 w-5 shrink-0 rounded-full border flex items-center justify-center transition ${
-                        ev.done ? "bg-emerald-500 border-emerald-500" : "border-border"
-                      }`}
-                    >
-                      <AnimatePresence>
-                        {ev.done && (
-                          <motion.span
-                            initial={{ scale: 0, rotate: -45 }}
-                            animate={{ scale: 1, rotate: 0 }}
-                            exit={{ scale: 0 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                          >
-                            <Check className="h-3 w-3 text-bg" />
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm truncate ${ev.done ? "line-through text-muted" : "text-ink"}`}>
-                        {ev.title}
-                      </p>
-                      {ev.notes && <p className="text-xs text-muted truncate">{ev.notes}</p>}
-                    </div>
-                    {ev.time && (
-                      <span className="text-xs num rounded-full px-2 py-0.5 bg-sky-500/10 text-sky-600">
-                        {ev.time}
-                      </span>
-                    )}
-                    <button onClick={() => remove(ev)} className="text-muted hover:text-danger">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
+        {events && dayEvents.length === 0 && (
+          <div className="card-base p-6 text-center">
+            <p className="text-sm text-muted">Nada agendado este día.</p>
           </div>
-        ))}
+        )}
+        <div className="flex flex-col">
+          {dayEvents.map((ev, idx) => {
+            const isLast = idx === dayEvents.length - 1;
+            return (
+              <div key={ev.id} className="flex gap-3">
+                <div className="w-12 shrink-0 text-right text-xs text-muted pt-2 num">
+                  {ev.time ? formatTime12h(ev.time) : ""}
+                </div>
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`h-9 w-9 shrink-0 rounded-full flex items-center justify-center ${
+                      ev.done ? "bg-emerald-500" : "bg-gradient-to-br from-accent to-violet-500"
+                    }`}
+                  >
+                    {ev.done ? (
+                      <Check className="h-4 w-4 text-white" />
+                    ) : (
+                      <Clock className="h-4 w-4 text-white" />
+                    )}
+                  </div>
+                  {!isLast && <div className="w-px flex-1 bg-border my-1" />}
+                </div>
+                <div className="flex-1 pb-6 pt-1.5 min-w-0">
+                  <p className={`font-semibold text-ink ${ev.done ? "line-through text-muted" : ""}`}>
+                    {ev.title}
+                  </p>
+                  {ev.notes && <p className="text-sm text-muted mt-0.5">{ev.notes}</p>}
+                </div>
+                <div className="flex flex-col items-center gap-2 pt-1.5">
+                  <button
+                    onClick={() => toggleDone(ev)}
+                    className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition ${
+                      ev.done ? "bg-emerald-500 border-emerald-500" : "border-accent/50"
+                    }`}
+                  >
+                    {ev.done && <Check className="h-3 w-3 text-white" />}
+                  </button>
+                  <button onClick={() => remove(ev)} className="text-muted hover:text-danger">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
+
+      <AnimatePresence>
+        {showForm && (
+          <motion.form
+            initial={{ opacity: 0, y: 16, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: 16, height: 0 }}
+            transition={{ duration: 0.22 }}
+            onSubmit={addEvent}
+            className="card-base p-4 flex flex-col gap-3 overflow-hidden"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-ink">Nuevo evento</p>
+              <button type="button" onClick={() => setShowForm(false)} className="text-muted hover:text-ink">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <input
+              type="text"
+              autoFocus
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Título del evento"
+              className="bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+            />
+            <div className="flex gap-2">
+              <input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="w-28 bg-bg border border-border rounded-xl px-2 py-2 text-sm text-ink focus:outline-none focus:border-accent"
+              />
+              <input
+                type="text"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Notas (opcional)"
+                className="flex-1 bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+              />
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              type="submit"
+              disabled={adding || !title.trim()}
+              className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-xl py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
+            >
+              <Plus className="h-4 w-4" /> Agregar
+            </motion.button>
+          </motion.form>
+        )}
+      </AnimatePresence>
+
+      <motion.button
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowForm((v) => !v)}
+        className="fixed bottom-24 right-4 h-14 w-14 rounded-full bg-gradient-to-br from-accent to-violet-500 shadow-lg shadow-black/20 flex items-center justify-center text-white z-20"
+      >
+        <motion.span
+          animate={{ rotate: showForm ? 45 : 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          <Plus className="h-6 w-6" />
+        </motion.span>
+      </motion.button>
     </main>
   );
 }
