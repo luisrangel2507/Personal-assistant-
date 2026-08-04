@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, CalendarDays, ChevronRight, Check } from "lucide-react";
+import { Plus, CalendarDays, ChevronRight, Check, Clock } from "lucide-react";
 import type { EventItem, ListSummary } from "@/lib/types";
-import { todayISO, formatFullDateLabel } from "@/lib/date";
+import { todayISO, formatFullDateLabel, formatTime12h } from "@/lib/date";
 import { IconChip, getIconStyle } from "@/components/ListIcon";
 import ProgressBar from "@/components/ProgressBar";
 
@@ -99,46 +99,43 @@ export default function HomePage() {
         {events?.length === 0 && (
           <p className="text-sm text-muted">No tienes nada agendado hoy. Agrega algo abajo.</p>
         )}
-        <motion.ul variants={listVariants} initial="hidden" animate="show" className="flex flex-col gap-2">
+        <motion.div variants={listVariants} initial="hidden" animate="show" className="flex flex-col">
           <AnimatePresence>
-            {events?.map((ev) => (
-              <motion.li
-                key={ev.id}
-                variants={itemVariants}
-                exit={{ opacity: 0, x: 8 }}
-                className="flex items-center gap-3"
-              >
-                <button
-                  onClick={() => toggleDone(ev)}
-                  className={`h-5 w-5 shrink-0 rounded-full border flex items-center justify-center transition ${
-                    ev.done ? "bg-emerald-500 border-emerald-500" : "border-border"
-                  }`}
+            {events?.map((ev, idx) => {
+              const isLast = idx === (events?.length ?? 0) - 1;
+              return (
+                <motion.div
+                  key={ev.id}
+                  variants={itemVariants}
+                  exit={{ opacity: 0, x: 8 }}
+                  className="flex gap-3"
                 >
-                  <AnimatePresence>
-                    {ev.done && (
-                      <motion.span
-                        initial={{ scale: 0, rotate: -45 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        exit={{ scale: 0 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                      >
-                        <Check className="h-3 w-3 text-bg" />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </button>
-                <div className="flex-1">
-                  <p className={`text-sm ${ev.done ? "line-through text-muted" : "text-ink"}`}>{ev.title}</p>
-                </div>
-                {ev.time && (
-                  <span className="text-xs num rounded-full px-2 py-0.5 bg-sky-500/10 text-sky-600">
-                    {ev.time}
-                  </span>
-                )}
-              </motion.li>
-            ))}
+                  <div className="w-14 shrink-0 text-right text-xs text-muted pt-1.5 num">
+                    {ev.time ? formatTime12h(ev.time) : ""}
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => toggleDone(ev)}
+                      className={`h-7 w-7 shrink-0 rounded-full flex items-center justify-center transition ${
+                        ev.done ? "bg-emerald-500" : "bg-gradient-to-br from-accent to-violet-500"
+                      }`}
+                    >
+                      {ev.done ? (
+                        <Check className="h-3.5 w-3.5 text-white" />
+                      ) : (
+                        <Clock className="h-3.5 w-3.5 text-white" />
+                      )}
+                    </button>
+                    {!isLast && <div className="w-px flex-1 bg-border my-1" />}
+                  </div>
+                  <div className="flex-1 pb-3 pt-1">
+                    <p className={`text-sm ${ev.done ? "line-through text-muted" : "text-ink"}`}>{ev.title}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
-        </motion.ul>
+        </motion.div>
 
         <form onSubmit={addEvent} className="flex gap-2 pt-2 border-t border-border">
           <input

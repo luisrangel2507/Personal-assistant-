@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import type { ListSummary } from "@/lib/types";
 import { LIST_ICONS } from "@/lib/types";
 import ListIconGlyph, { IconChip, getIconStyle } from "@/components/ListIcon";
@@ -14,6 +14,7 @@ export default function ListsPage() {
   const [name, setName] = useState("");
   const [icon, setIcon] = useState<string>("list");
   const [creating, setCreating] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   async function load() {
     const res = await fetch("/api/lists");
@@ -36,6 +37,7 @@ export default function ListsPage() {
       });
       setName("");
       setIcon("list");
+      setShowForm(false);
       await load();
     } finally {
       setCreating(false);
@@ -54,53 +56,73 @@ export default function ListsPage() {
         <h1 className="text-2xl font-semibold text-ink">Compras, viajes y más</h1>
       </header>
 
-      <form onSubmit={createList} className="card-base p-4 flex flex-col gap-3">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Nombre de la lista (ej. Despensa, Viaje a Cancún)"
-          className="bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
-        />
-        <div className="flex items-center gap-2 flex-wrap">
-          {LIST_ICONS.map((i) => {
-            const style = getIconStyle(i);
-            const isSelected = icon === i;
-            return (
-              <button
-                type="button"
-                key={i}
-                onClick={() => setIcon(i)}
-                className="relative h-9 w-9 rounded-xl flex items-center justify-center"
-              >
-                {isSelected && (
-                  <motion.span
-                    layoutId="icon-pick-pill"
-                    className={`absolute inset-0 rounded-xl border ${style.ring} ${style.bg} ${style.glow}`}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-                <ListIconGlyph
-                  icon={i}
-                  className={`relative h-4 w-4 ${isSelected ? style.text : "text-muted"}`}
-                />
+      <AnimatePresence>
+        {showForm && (
+          <motion.form
+            initial={{ opacity: 0, y: 16, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: 16, height: 0 }}
+            transition={{ duration: 0.22 }}
+            onSubmit={createList}
+            className="card-base p-4 flex flex-col gap-3 overflow-hidden"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-ink">Nueva lista</p>
+              <button type="button" onClick={() => setShowForm(false)} className="text-muted hover:text-ink">
+                <X className="h-4 w-4" />
               </button>
-            );
-          })}
-        </div>
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          type="submit"
-          disabled={creating || !name.trim()}
-          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-xl py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
-        >
-          <Plus className="h-4 w-4" /> Crear lista
-        </motion.button>
-      </form>
+            </div>
+            <input
+              type="text"
+              autoFocus
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nombre de la lista (ej. Despensa, Viaje a Cancún)"
+              className="bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+            />
+            <div className="flex items-center gap-2 flex-wrap">
+              {LIST_ICONS.map((i) => {
+                const style = getIconStyle(i);
+                const isSelected = icon === i;
+                return (
+                  <button
+                    type="button"
+                    key={i}
+                    onClick={() => setIcon(i)}
+                    className="relative h-9 w-9 rounded-xl flex items-center justify-center"
+                  >
+                    {isSelected && (
+                      <motion.span
+                        layoutId="icon-pick-pill"
+                        className={`absolute inset-0 rounded-xl border ${style.ring} ${style.bg} ${style.glow}`}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                    <ListIconGlyph
+                      icon={i}
+                      className={`relative h-4 w-4 ${isSelected ? style.text : "text-muted"}`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              type="submit"
+              disabled={creating || !name.trim()}
+              className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-xl py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
+            >
+              <Plus className="h-4 w-4" /> Crear lista
+            </motion.button>
+          </motion.form>
+        )}
+      </AnimatePresence>
 
       <section className="flex flex-col gap-2">
         {lists === null && <p className="text-sm text-muted">Cargando…</p>}
-        {lists?.length === 0 && <p className="text-sm text-muted">Aún no tienes listas — crea una arriba.</p>}
+        {lists?.length === 0 && !showForm && (
+          <p className="text-sm text-muted">Aún no tienes listas — crea una con el botón +.</p>
+        )}
         <AnimatePresence initial={false}>
           {lists?.map((list) => {
             const style = getIconStyle(list.icon);
@@ -135,6 +157,19 @@ export default function ListsPage() {
           })}
         </AnimatePresence>
       </section>
+
+      <motion.button
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowForm((v) => !v)}
+        className="fixed bottom-24 right-4 h-14 w-14 rounded-full bg-gradient-to-br from-accent to-violet-500 shadow-lg shadow-black/20 flex items-center justify-center text-white z-20"
+      >
+        <motion.span
+          animate={{ rotate: showForm ? 45 : 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          <Plus className="h-6 w-6" />
+        </motion.span>
+      </motion.button>
     </main>
   );
 }
