@@ -85,7 +85,7 @@ export default function HomePage() {
       >
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
-            <div className="h-7 w-7 rounded-lg bg-sky-500/10 flex items-center justify-center">
+            <div className="h-7 w-7 rounded-full bg-sky-500/10 flex items-center justify-center">
               <CalendarDays className="h-4 w-4 text-sky-600" />
             </div>
             Agenda de hoy
@@ -145,20 +145,20 @@ export default function HomePage() {
             type="time"
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="bg-bg border border-border rounded-md px-2 py-2 text-sm text-ink w-28 focus:outline-none focus:border-accent"
+            className="bg-bg border border-border rounded-xl px-2 py-2 text-sm text-ink w-28 focus:outline-none focus:border-accent"
           />
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Agregar un evento…"
-            className="flex-1 bg-bg border border-border rounded-md px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+            className="flex-1 bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
           />
           <motion.button
             whileTap={{ scale: 0.92 }}
             type="submit"
             disabled={adding || !title.trim()}
-            className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-md px-3 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
+            className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-xl px-3 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
           >
             <Plus className="h-4 w-4" />
           </motion.button>

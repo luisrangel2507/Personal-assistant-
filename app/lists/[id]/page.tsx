@@ -123,20 +123,20 @@ export default function ListDetailPage() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Agregar un artículo…"
-          className="flex-1 bg-bg border border-border rounded-md px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+          className="flex-1 bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
         />
         <input
           type="text"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           placeholder="Cant."
-          className="w-16 bg-bg border border-border rounded-md px-2 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+          className="w-16 bg-bg border border-border rounded-xl px-2 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
         />
         <motion.button
           whileTap={{ scale: 0.92 }}
           type="submit"
           disabled={adding || !text.trim()}
-          className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-md px-3 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
+          className="bg-gradient-to-br from-accent to-violet-500 text-bg rounded-xl px-3 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
         >
           <Plus className="h-4 w-4" />
         </motion.button>

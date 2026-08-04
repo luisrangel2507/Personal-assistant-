@@ -71,7 +71,7 @@ function LoginForm() {
             value={passcode}
             onChange={(e) => setPasscode(e.target.value)}
             placeholder="Ingresa tu código"
-            className="bg-bg border border-border rounded-md px-3 py-2 text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+            className="bg-bg border border-border rounded-xl px-3 py-2 text-ink placeholder:text-muted focus:outline-none focus:border-accent"
           />
           {error && <p className="text-sm text-danger">Código inválido.</p>}
         </div>
@@ -79,7 +79,7 @@ function LoginForm() {
           whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={loading}
-          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold uppercase tracking-wide text-sm rounded-md py-2.5 hover:brightness-110 transition disabled:opacity-60 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold uppercase tracking-wide text-sm rounded-xl py-2.5 hover:brightness-110 transition disabled:opacity-60 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
         >
           Iniciar sesión
         </motion.button>

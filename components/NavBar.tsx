@@ -28,8 +28,8 @@ export default function NavBar() {
   if (pathname === "/login") return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border">
-      <div className="mx-auto max-w-lg flex px-2 py-2">
+    <nav className="fixed bottom-3 left-3 right-3">
+      <div className="mx-auto max-w-lg flex bg-card border border-border/70 rounded-3xl shadow-lg shadow-black/10 px-2 py-2">
         {TABS.map(({ href, label, icon: Icon, glow, text }) => {
           const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
@@ -38,7 +38,7 @@ export default function NavBar() {
                 {isActive && (
                   <motion.div
                     layoutId="nav-pill"
-                    className={`absolute inset-0 rounded-xl ${glow}`}
+                    className={`absolute inset-0 rounded-2xl ${glow}`}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}

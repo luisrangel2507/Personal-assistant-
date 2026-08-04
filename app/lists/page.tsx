@@ -60,7 +60,7 @@ export default function ListsPage() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nombre de la lista (ej. Despensa, Viaje a Cancún)"
-          className="bg-bg border border-border rounded-md px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+          className="bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
         />
         <div className="flex items-center gap-2 flex-wrap">
           {LIST_ICONS.map((i) => {
@@ -71,12 +71,12 @@ export default function ListsPage() {
                 type="button"
                 key={i}
                 onClick={() => setIcon(i)}
-                className="relative h-9 w-9 rounded-md flex items-center justify-center"
+                className="relative h-9 w-9 rounded-xl flex items-center justify-center"
               >
                 {isSelected && (
                   <motion.span
                     layoutId="icon-pick-pill"
-                    className={`absolute inset-0 rounded-md border ${style.ring} ${style.bg} ${style.glow}`}
+                    className={`absolute inset-0 rounded-xl border ${style.ring} ${style.bg} ${style.glow}`}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
@@ -92,7 +92,7 @@ export default function ListsPage() {
           whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={creating || !name.trim()}
-          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-xl py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
         >
           <Plus className="h-4 w-4" /> Crear lista
         </motion.button>

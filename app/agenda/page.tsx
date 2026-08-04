@@ -110,20 +110,20 @@ export default function AgendaPage() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Título del evento"
-          className="bg-bg border border-border rounded-md px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
+          className="bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent"
         />
         <div className="flex gap-2">
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="flex-1 bg-bg border border-border rounded-md px-3 py-2 text-sm text-ink focus:outline-none focus:border-accent"
+            className="flex-1 bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink focus:outline-none focus:border-accent"
           />
           <input
             type="time"
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-28 bg-bg border border-border rounded-md px-2 py-2 text-sm text-ink focus:outline-none focus:border-accent"
+            className="w-28 bg-bg border border-border rounded-xl px-2 py-2 text-sm text-ink focus:outline-none focus:border-accent"
           />
         </div>
         <textarea
@@ -131,13 +131,13 @@ export default function AgendaPage() {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Notas (opcional)"
           rows={2}
-          className="bg-bg border border-border rounded-md px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent resize-none"
+          className="bg-bg border border-border rounded-xl px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent resize-none"
         />
         <motion.button
           whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={adding || !title.trim()}
-          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-md py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
+          className="bg-gradient-to-r from-accent to-violet-500 text-bg font-semibold text-sm rounded-xl py-2 flex items-center justify-center gap-1 disabled:opacity-40 shadow-[0_2px_10px_rgba(61,111,224,0.3)]"
         >
           <Plus className="h-4 w-4" /> Agregar evento
         </motion.button>

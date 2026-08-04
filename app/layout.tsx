@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={inter.variable}>
-      <body className="min-h-screen font-sans antialiased pb-20">
+      <body className="min-h-screen font-sans antialiased pb-24">
         <PageTransition>{children}</PageTransition>
         <NavBar />
       </body>

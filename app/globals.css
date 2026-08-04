@@ -47,7 +47,7 @@ body {
     @apply font-mono tabular-nums;
   }
   .card-base {
-    @apply bg-card border border-border rounded-lg transition-colors duration-300;
+    @apply bg-card border border-border/70 rounded-3xl shadow-sm shadow-black/5 transition-colors duration-300;
   }
   .card-scan {
     @apply relative overflow-hidden;
